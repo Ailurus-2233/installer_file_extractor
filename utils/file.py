@@ -1,7 +1,7 @@
 import shutil
 import os
 from pathlib import Path
-from config import ext_type_list, ext_save_list, exe_size, save_list
+from config import ext_type_list, ext_save_list, exe_size, save_list, cache_path
 
 
 def write(info, file_path):
@@ -37,13 +37,15 @@ def restore(file_path):
 
 
 def remove_file(file_path):
-    os.remove(file_path)
+    try:
+        os.remove(file_path)
+    except Exception:
+        pass
 
-
-def get_file_list(floder_path: Path, file_list=[]):
+def get_file_list(floder_path: Path, file_list=[], save_list=[]):
     for f in floder_path.iterdir():
         if (floder_path / f.name).is_dir():
-            get_file_list(floder_path / f.name, file_list)
+            get_file_list(floder_path / f.name, file_list, save_list)
         if (floder_path / f.name).is_file():
             file = floder_path / f.name
             if file.suffix in ext_type_list:
@@ -52,9 +54,10 @@ def get_file_list(floder_path: Path, file_list=[]):
                         file_list.append(file)
                     if file.suffix in ['.msi', '.MSI']:
                         file_list.append(file)
+                    save_list.append(file)
                 else:
                     file_list.append(file)
-    return file_list
+    return file_list, save_list
 
 
 def remove_useless_file(floder_path: Path):
@@ -65,7 +68,6 @@ def remove_useless_file(floder_path: Path):
         if file.is_file() and file.suffix not in save_list:
             remove_file(file)
 
-
 def remove_empty_folder(floder_path: Path):
     for f in floder_path.iterdir():
         target = floder_path / f.name
@@ -73,3 +75,27 @@ def remove_empty_folder(floder_path: Path):
             remove_empty_folder(target)
             if not os.listdir(target):
                 remove(target)
+
+
+def load_cache_file(file_path: Path):
+    file = Path(cache_path) / f'{file_path.stem}.sf'
+    if not file.exists():
+        return []
+    with open(file, "r", encoding="UTF-8") as f:
+        arr_tmp = f.readlines()
+        for file in arr_tmp:
+            index = arr_tmp.index(file)
+            if '\n' in file:
+                file = file.replace('\n', '')
+            arr_tmp[index] = Path(file)
+    return arr_tmp
+
+
+def add_cache_file(file_path: Path, save_file_list: list):
+    file = Path(cache_path) / f'{file_path.stem}.sf'
+    tmp = load_cache_file(file)
+    tmp.extend(save_file_list)
+    tmp = list(set(tmp))
+    with open(file, "w", encoding="UTF-8") as f:
+        for sfile in tmp:
+            f.write(str(sfile) + '\n')

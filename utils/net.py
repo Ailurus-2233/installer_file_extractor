@@ -1,6 +1,7 @@
 import requests
 import json
 from config import url
+from utils.log import log
 
 def sent_info(task_id, percent, extract_path, status):
     data = {
@@ -9,9 +10,10 @@ def sent_info(task_id, percent, extract_path, status):
         'status': status,
         'percent': int(percent*100)
     }
-    print(f"[log]: post {data}")
+    if percent == 1:
+        log.info(f"Sending data:{data} to server:{url}")
     try:
         requests.post(url, json.dumps(data), headers=(
             {"content-type": "application/json"}))
-    except:
-        print(f'[error]: {url} 连接异常')
+    except Exception:
+        log.error(f"Send data:{data} to server:{url} failed")

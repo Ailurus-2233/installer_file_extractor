@@ -5,6 +5,7 @@ import tempfile
 import time
 import psutil
 from config import uniextract, uniextract_path
+from utils.log import log
 
 
 def add_batch_queue(file_path, extract_path):
@@ -42,15 +43,16 @@ def check_extract_path(file_path, extract_path):
 
 
 def extract_time_out():
+    log.info("time out! kill process named IsXunpack.exe")
     try:
         kill_process("IsXunpack.exe")
     except:
-        print(f'[error]:没有名字为IsXunpack.exe进程')
+        log.error("no process named IsXunpack.exe")
     batch = uniextract_path/"batch.queue"
     try:
         uf.remove(batch)
     except:
-        print(f'[error]:没有等待解压队列文件')
+        log.error(f"no batch.queue file")
 
 
 def kill_process(name):
@@ -65,6 +67,6 @@ def kill_process(name):
                     subprocess.Popen(
                         "cmd.exe /k taskkill /F /T /PID %i" % pid, shell=True)
                 except OSError:
-                    print(f'[error]:没有名字为{name}进程')
+                    log.error(f"kill process {process_name} failed")
         except:
             continue

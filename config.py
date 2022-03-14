@@ -32,6 +32,13 @@ uniextract = uniextract_path/'Uniextract.exe'
 
 
 '''
+cache 文件夹目录
+'''
+cache_path = Path('./cache')
+# cache_path = Path('C:/Users/supplychain/Documents/file_unpack/cache')
+
+
+'''
 exe 解压文件大小
 '''
 exe_size = 100 * 1024 * 1024
