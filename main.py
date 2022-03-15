@@ -43,6 +43,7 @@ def main(args):
             file_list, save_list = uf.get_file_list(extract_path)
             uf.add_cache_file(file_path, save_list)
             if file_list == []:
+                sent_info(args.task_id, 1, extract_path, 1)
                 break
             tmp_list = uf.load_cache_file(file_path)
             index = 0
@@ -56,10 +57,9 @@ def main(args):
                 else:
                     ue.extract_sub(file, extract_sub_path)
                 percent = index / len(file_list) / ext_deep + (height-1)/ext_deep
-                if percent == 1:
-                    sent_info(args.task_id, 1, extract_path, 1)
-                else:
-                    sent_info(args.task_id, percent, extract_path, 0)
+                sent_info(args.task_id, percent, extract_path, 0)
+            sent_info(args.task_id, height/ext_deep, extract_path, 0)
+        sent_info(args.task_id, 1, extract_path, 1)
     else:
         # 发送请求解压失败:
         sent_info(args.task_id, 0, extract_path, -1)

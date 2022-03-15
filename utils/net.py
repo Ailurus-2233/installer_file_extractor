@@ -10,7 +10,7 @@ def sent_info(task_id, percent, extract_path, status):
         'status': status,
         'percent': int(percent*100)
     }
-    if percent == 1:
+    if int(percent * 100) % 10 == 0:
         log.info(f"Sending data:{data} to server:{url}")
     try:
         requests.post(url, json.dumps(data), headers=(
