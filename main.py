@@ -3,7 +3,6 @@ from pathlib import Path
 import utils.file as uf
 import utils.uniextract as uu
 import utils.extract as ue
-from tqdm import tqdm
 from rich.progress import track
 from utils.net import sent_info
 from config import ext_deep, ext_save_list

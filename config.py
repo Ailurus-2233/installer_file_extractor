@@ -24,8 +24,6 @@ ext_type_list = ['.001', '.7Z', '.7z', '.ACE', '.ADF', '.ALZ', '.ARC', '.ARJ', '
                  '.tz', '.uif', '.vdi', '.vhd', '.vmdk', '.wim', '.wz', '.xpi', '.xz', '.zip', '.zoo', 
                  '.zpaq']
 ext_save_list = ['.exe', '.EXE', '.msi', '.MSI']
-ext_delete_list = ['.zip', '.ZIP', '.rar', '.RAR', '.gz', '.GZ', '.iso',
-                   '.ISO', '.cab', '.CAB', '.7z', '.7Z']
 
 
 '''
