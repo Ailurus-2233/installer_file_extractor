@@ -1,7 +1,10 @@
 import shutil
 import os
 from pathlib import Path
-from config import ext_type_list, ext_save_list, exe_size, save_list, cache_path
+from matplotlib.colors import same_color
+
+from sympy import re
+from config import ext_type_list, ext_save_list, exe_size, save_list, cache_path, max_deep
 
 
 def write(info, file_path):
@@ -42,10 +45,14 @@ def remove_file(file_path):
     except Exception:
         pass
 
-def get_file_list(floder_path: Path, file_list=[], save_list=[]):
+
+def get_file_list(floder_path: Path, file_list=[], save_list=[], deep=0):
+    if deep > max_deep:
+        return file_list, save_list
     for f in floder_path.iterdir():
         if (floder_path / f.name).is_dir():
-            get_file_list(floder_path / f.name, file_list, save_list)
+            get_file_list(floder_path / f.name, file_list,
+                          save_list, deep=deep+1)
         if (floder_path / f.name).is_file():
             file = floder_path / f.name
             if file.suffix in ext_type_list:
@@ -67,6 +74,7 @@ def remove_useless_file(floder_path: Path):
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
             remove_file(file)
+
 
 def remove_empty_folder(floder_path: Path):
     for f in floder_path.iterdir():
