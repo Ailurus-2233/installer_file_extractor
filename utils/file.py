@@ -2,7 +2,6 @@ import shutil
 import os
 from pathlib import Path
 
-from sympy import re
 from config import ext_type_list, ext_save_list, exe_size, save_list, cache_path, max_deep
 
 
