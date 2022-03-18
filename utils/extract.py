@@ -1,6 +1,9 @@
 from msilib.schema import Error
+
+from cv2 import log
 import utils.uniextract as uu
 import utils.file as uf
+from utils.log import log
 from func_timeout import func_set_timeout, FunctionTimedOut
 import os
 import math
@@ -59,6 +62,8 @@ def extract_root(file_path, extract_path):
             run_extract(file_path, extract_path)
         except FunctionTimedOut:
             uu.extract_time_out()
+        except FileNotFoundError:
+            log.error(f"File not found {file_path}")
         if not file_path.exists():
             uf.restore(file_path)
         uf.remove_file(str(file_path)+".bak")
@@ -71,6 +76,8 @@ def extract_sub(file_path, extract_path):
             run_extract(file_path, extract_path)
         except FunctionTimedOut:
             uu.extract_time_out()
+        except FileNotFoundError:
+            log.error(f"File not found {file_path}")
         _, flag = uu.check_extract_path(file_path, extract_path)
         if flag and file_path.suffix in type_list:
             uf.remove_file(file_path)
