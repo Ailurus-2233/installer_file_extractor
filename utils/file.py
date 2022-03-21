@@ -105,3 +105,18 @@ def add_cache_file(file_path: Path, save_file_list: list):
     with open(file, "w", encoding="UTF-8") as f:
         for sfile in tmp:
             f.write(str(sfile) + '\n')
+
+
+def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
+    if deep > max_deep:
+        return file_list
+    for f in floder_path.iterdir():
+        if (floder_path / f.name).is_dir():
+            get_all_file_name_list(floder_path / f.name, file_list, deep=deep+1)
+        if (floder_path / f.name).is_file():
+            file_list.append(f.name)
+    return list(set(file_list))
+
+def save_file_name(extract_path):
+    file_list = get_all_file_name_list(extract_path)
+    write('\n'.join(file_list), str(extract_path / 'file_list.txt'))

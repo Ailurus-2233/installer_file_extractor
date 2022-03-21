@@ -1,5 +1,7 @@
 import argparse
 from pathlib import Path
+
+from sympy import E
 import utils.file as uf
 import utils.uniextract as uu
 import utils.extract as ue
@@ -63,6 +65,9 @@ def main(args):
         # 发送请求解压失败:
         sent_info(args.task_id, 0, extract_path, -1)
         log.error(f"Extract {file_path} failed")
+
+    log.info("Save all files name to filenames.txt")
+    uf.save_file_name(extract_path)
 
     log.info("Remove useless file")
     uf.remove_useless_file(extract_path)
