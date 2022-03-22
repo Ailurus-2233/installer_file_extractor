@@ -3,7 +3,7 @@ import shutil
 import os
 from pathlib import Path
 
-from config import ext_type_list, ext_save_list, exe_size, save_list, cache_path, max_deep
+from config import ext_type_list, ext_save_list, exe_size, save_list, max_deep
 
 
 def write(info, file_path):
@@ -75,7 +75,7 @@ def remove_useless_file(floder_path: Path):
         if file.is_dir():
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
-            log.info(f"remove file {file} with suffix {file.suffix}")
+            # log.info(f"remove file {file} with suffix {file.suffix}")
             remove_file(file)
 
 
