@@ -1,6 +1,4 @@
-from msilib.schema import Error
-
-from cv2 import log
+from pathlib import Path
 import utils.uniextract as uu
 import utils.file as uf
 from utils.log import log
@@ -46,15 +44,14 @@ func_extract = {
 }
 
 
-def run_extract(file_path, extract_path):
+def run_extract(file_path: Path, extract_path: Path):
     file_size = int(math.log(os.stat(file_path).st_size / 1024 / 1024))
     file_size = 4 if file_size >= 4 else file_size
     file_size = 0 if file_size <= 0 else file_size
     func_extract[file_size](file_path, extract_path)
 
 
-
-def extract_root(file_path, extract_path):
+def extract_root(file_path: Path, extract_path: Path):
     _, flag = uu.check_extract_path(file_path, extract_path)
     if not flag:
         uf.backup(file_path)
@@ -69,7 +66,7 @@ def extract_root(file_path, extract_path):
         uf.remove_file(str(file_path)+".bak")
 
 
-def extract_sub(file_path, extract_path):
+def extract_sub(file_path: Path, extract_path: Path):
     _, flag = uu.check_extract_path(file_path, extract_path)
     if not flag:
         try:
@@ -81,3 +78,5 @@ def extract_sub(file_path, extract_path):
         _, flag = uu.check_extract_path(file_path, extract_path)
         if flag and file_path.suffix in type_list:
             uf.remove_file(file_path)
+            return file_path.name
+        return None

@@ -122,6 +122,7 @@ def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
             file_list.append(f.name)
     return file_list
 
-def save_file_name(extract_path):
+def save_file_name(extract_path, deleted_list):
     file_list = get_all_file_name_list(extract_path)
+    file_list += deleted_list
     write("\n".join(file_list), extract_path / 'filenames.txt')

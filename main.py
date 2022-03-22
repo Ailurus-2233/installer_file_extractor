@@ -10,6 +10,7 @@ from utils.net import sent_info
 from config import ext_deep, ext_save_list
 from utils.log import log
 
+
 def main(args):
     file_path = Path(args.file_path)
     extract_path = args.extract_path
@@ -39,6 +40,7 @@ def main(args):
     '''
     if flag:
         height = 0
+        deleted_list = []
         while height < ext_deep:
             height += 1
             file_list, save_list = uf.get_file_list(extract_path)
@@ -53,11 +55,11 @@ def main(args):
                 if file in tmp_list:
                     continue
                 extract_sub_path = file.parent/file.stem
-                if file.suffix in ext_save_list:
-                    ue.extract_sub(file, extract_sub_path)
-                else:
-                    ue.extract_sub(file, extract_sub_path)
-                percent = index / len(file_list) / ext_deep + (height-1)/ext_deep
+                tmp = ue.extract_sub(file, extract_sub_path)
+                if tmp != None:
+                    deleted_list.append(tmp)
+                percent = index / len(file_list) / \
+                    ext_deep + (height-1)/ext_deep
                 sent_info(args.task_id, percent, extract_path, 0)
             sent_info(args.task_id, height/ext_deep, extract_path, 0)
             uf.add_cache_file(file_path, save_list)
@@ -68,11 +70,12 @@ def main(args):
         log.error(f"Extract {file_path} failed")
 
     log.info("Save all files name to filenames.txt")
-    uf.save_file_name(extract_path)
+    uf.save_file_name(extract_path, deleted_list)
 
     log.info("Remove useless file")
     uf.remove_useless_file(extract_path)
     uf.remove_empty_folder(extract_path)
+
 
 if __name__ == '__main__':
     parse = argparse.ArgumentParser()
