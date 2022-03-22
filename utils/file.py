@@ -1,3 +1,4 @@
+from utils.log import log
 import shutil
 import os
 from pathlib import Path
@@ -47,6 +48,9 @@ def remove_file(file_path):
 def get_file_list(floder_path: Path, file_list=[], save_list=[], deep=0):
     if deep > max_deep:
         return file_list, save_list
+    if deep == 0:
+        file_list = []
+        save_list = []
     for f in floder_path.iterdir():
         if (floder_path / f.name).is_dir():
             get_file_list(floder_path / f.name, file_list,
@@ -55,7 +59,7 @@ def get_file_list(floder_path: Path, file_list=[], save_list=[], deep=0):
             file = floder_path / f.name
             if file.suffix in ext_type_list:
                 if file.suffix in ext_save_list:
-                    if file.suffix in ['.exe', '.EXE'] and os.stat(file).st_size > exe_size:
+                    if file.suffix in ['.exe', '.EXE', '.bin', '.BIN'] and os.stat(file).st_size > exe_size:
                         file_list.append(file)
                     if file.suffix in ['.msi', '.MSI']:
                         file_list.append(file)
@@ -71,6 +75,7 @@ def remove_useless_file(floder_path: Path):
         if file.is_dir():
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
+            log.info(f"remove file {file} with suffix {file.suffix}")
             remove_file(file)
 
 
@@ -84,7 +89,7 @@ def remove_empty_folder(floder_path: Path):
 
 
 def load_cache_file(file_path: Path):
-    file = Path(cache_path) / f'{file_path.stem}.sf'
+    file = file_path.parent / f'{file_path.stem}.sf'
     if not file.exists():
         return []
     with open(file, "r", encoding="UTF-8") as f:
@@ -98,7 +103,7 @@ def load_cache_file(file_path: Path):
 
 
 def add_cache_file(file_path: Path, save_file_list: list):
-    file = Path(cache_path) / f'{file_path.stem}.sf'
+    file = file_path.parent / f'{file_path.stem}.sf'
     tmp = load_cache_file(file)
     tmp.extend(save_file_list)
     tmp = list(set(tmp))
@@ -108,6 +113,8 @@ def add_cache_file(file_path: Path, save_file_list: list):
 
 
 def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
+    if deep == 0:
+        file_list = []
     if deep > max_deep:
         return file_list
     for f in floder_path.iterdir():
@@ -115,8 +122,8 @@ def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
             get_all_file_name_list(floder_path / f.name, file_list, deep=deep+1)
         if (floder_path / f.name).is_file():
             file_list.append(f.name)
-    return list(set(file_list))
+    return file_list
 
 def save_file_name(extract_path):
     file_list = get_all_file_name_list(extract_path)
-    write('\n'.join(file_list), str(extract_path / 'file_list.txt'))
+    write(str(file_list), extract_path / 'filenames.txt')
