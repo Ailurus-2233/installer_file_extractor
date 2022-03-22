@@ -1,4 +1,3 @@
-from utils.log import log
 import shutil
 import os
 from pathlib import Path
@@ -75,7 +74,6 @@ def remove_useless_file(floder_path: Path):
         if file.is_dir():
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
-            # log.info(f"remove file {file} with suffix {file.suffix}")
             remove_file(file)
 
 
@@ -126,4 +124,4 @@ def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
 
 def save_file_name(extract_path):
     file_list = get_all_file_name_list(extract_path)
-    write(str(file_list), extract_path / 'filenames.txt')
+    write("\n".join(file_list), extract_path / 'filenames.txt')
