@@ -14,8 +14,8 @@ url = 'http://localhost:8080/unpack/callback'
 # ext_type_list += [x.lower() for x in ext_type_list]
 # ext_type_list = list(set(ext_type_list))
 
-ext_type_list = ['.001', '.7Z', '.7z', '.BIN', '.BZ2', '.CAB', '.CPIO', '.EXE', '.GZ', '.IMG', '.IPK', '.ISO', '.JAR', '.LZ', '.MSI', '.MSM', '.MSP', '.MSU', '.RAR', '.TAR', '.TBZ2', '.TGZ', '.TXZ', '.TZ',
-                 '.ZIP', '.ZOO', '.bin', '.bz2', '.cab', '.cpio', '.exe', '.gz', '.img', '.ipk', '.iso', '.jar', '.lz', '.msi', '.msm', '.msp', '.msu', '.rar', '.tar', '.tbz2', '.tgz', '.txz', '.tz', '.zip', '.zoo']
+ext_type_list = ['.001', '.7Z', '.7z', '.BIN', '.BZ2', '.CAB', '.CPIO', '.EXE', '.GZ', '.IMG', '.IPK', '.ISO', '.LZ', '.MSI', '.MSM', '.MSP', '.MSU', '.RAR', '.TAR', '.TBZ2', '.TGZ', '.TXZ', '.TZ',
+                 '.ZIP', '.ZOO', '.bin', '.bz2', '.cab', '.cpio', '.exe', '.gz', '.img', '.ipk', '.iso', '.lz', '.msi', '.msm', '.msp', '.msu', '.rar', '.tar', '.tbz2', '.tgz', '.txz', '.tz', '.zip', '.zoo']
 
 ext_save_list = ['.exe', '.EXE', '.msi', '.MSI', '.bin', '.BIN']
 

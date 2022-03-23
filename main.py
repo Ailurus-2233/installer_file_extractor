@@ -38,9 +38,9 @@ def main(args):
     '''
     深度解压子文件
     '''
+    deleted_list = []
     if flag:
         height = 0
-        deleted_list = []
         while height < ext_deep:
             height += 1
             file_list, save_list = uf.get_file_list(extract_path)
