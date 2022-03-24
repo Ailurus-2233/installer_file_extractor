@@ -2,6 +2,8 @@ import shutil
 import os
 from pathlib import Path
 
+from utils.log import log
+
 from config import ext_type_list, ext_save_list, exe_size, save_list, max_deep
 
 
@@ -26,7 +28,10 @@ def move(old_path, new_path):
 
 
 def remove(folder_path):
-    shutil.rmtree(folder_path)
+    try:
+        shutil.rmtree(folder_path)
+    except:
+        log.error(f'删除文件夹失败：{folder_path}')
 
 
 def backup(file_path):
@@ -50,21 +55,24 @@ def get_file_list(floder_path: Path, file_list=[], save_list=[], deep=0):
     if deep == 0:
         file_list = []
         save_list = []
-    for f in floder_path.iterdir():
-        if (floder_path / f.name).is_dir():
-            get_file_list(floder_path / f.name, file_list,
-                          save_list, deep=deep+1)
-        if (floder_path / f.name).is_file():
-            file = floder_path / f.name
-            if file.suffix in ext_type_list:
-                if file.suffix in ext_save_list:
-                    if file.suffix in ['.exe', '.EXE', '.bin', '.BIN'] and os.stat(file).st_size > exe_size:
+    try:
+        for f in floder_path.iterdir():
+            if (floder_path / f.name).is_dir():
+                get_file_list(floder_path / f.name, file_list,
+                              save_list, deep=deep+1)
+            if (floder_path / f.name).is_file():
+                file = floder_path / f.name
+                if file.suffix in ext_type_list:
+                    if file.suffix in ext_save_list:
+                        if file.suffix in ['.exe', '.EXE', '.bin', '.BIN'] and os.stat(file).st_size > exe_size:
+                            file_list.append(file)
+                        if file.suffix in ['.msi', '.MSI']:
+                            file_list.append(file)
+                        save_list.append(file)
+                    else:
                         file_list.append(file)
-                    if file.suffix in ['.msi', '.MSI']:
-                        file_list.append(file)
-                    save_list.append(file)
-                else:
-                    file_list.append(file)
+    except FileNotFoundError:
+        remove(floder_path)
     return file_list, save_list
 
 
