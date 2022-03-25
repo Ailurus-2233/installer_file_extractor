@@ -58,10 +58,10 @@ def main(args):
                     deleted_list.append(tmp)
                 percent = index / len(file_list) / \
                     ext_deep + (height-1)/ext_deep
-                # sent_info(args.task_id, percent, extract_path, 0)
-            # sent_info(args.task_id, height/ext_deep, extract_path, 0)
+                sent_info(args.task_id, percent, extract_path, 0)
+            sent_info(args.task_id, height/ext_deep, extract_path, 0)
             uf.add_cache_file(file_path, save_list)
-        # sent_info(args.task_id, 1, extract_path, 1)
+        sent_info(args.task_id, 1, extract_path, 1)
     else:
         # 发送请求解压失败:
         sent_info(args.task_id, 0, extract_path, -1)

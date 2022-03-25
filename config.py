@@ -29,8 +29,8 @@ ext_deep = 3
 '''
 uniextract2 位置
 '''
-# uniextract_path = Path('C:/Users/supplychain/Documents/file_unpack/uniextract2')
-uniextract_path = Path('./uniextract2')
+uniextract_path = Path('C:/Users/supplychain/Documents/file_unpack/uniextract2')
+# uniextract_path = Path('./uniextract2')
 uniextract = uniextract_path/'Uniextract.exe'
 
 
