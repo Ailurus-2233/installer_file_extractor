@@ -4,7 +4,7 @@ from pathlib import Path
 
 from utils.log import log
 
-from config import ext_type_list, ext_save_list, exe_size, save_list, max_deep
+from config import exe_size, save_list, file_type
 
 
 def write(info, file_path):
@@ -49,36 +49,22 @@ def remove_file(file_path):
         pass
 
 
-def get_file_list(floder_path: Path, file_list=[], save_list=[], deep=0):
-    if deep > max_deep:
-        return file_list, save_list
+def get_file_list(floder_path: Path, file_list=[], deep=0):
     if deep == 0:
         file_list = []
-        save_list = []
-    try:
-        for f in floder_path.iterdir():
-            if (floder_path / f.name).is_dir():
-                get_file_list(floder_path / f.name, file_list,
-                              save_list, deep=deep+1)
-            if (floder_path / f.name).is_file():
-                file = floder_path / f.name
-                if file.suffix in ext_type_list:
-                    if file.suffix in ext_save_list:
-                        if file.suffix in ['.exe', '.EXE', '.bin', '.BIN'] and os.stat(file).st_size > exe_size:
-                            file_list.append(file)
-                        if file.suffix in ['.msi', '.MSI']:
-                            file_list.append(file)
-                        save_list.append(file)
-                    else:
-                        file_list.append(file)
-    except FileNotFoundError:
-        remove(floder_path)
-    return file_list, save_list
+    for file in floder_path.iterdir():
+        if file.is_dir():
+            get_file_list(file, file_list, deep+1)
+        else:
+            file_list.append(file)
+    return file_list
 
 
 def remove_useless_file(floder_path: Path):
-    for f in floder_path.iterdir():
-        file = floder_path / f.name
+    '''
+    删除无用文件
+    '''
+    for file in floder_path.iterdir():
         if file.is_dir():
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
@@ -86,15 +72,20 @@ def remove_useless_file(floder_path: Path):
 
 
 def remove_empty_folder(floder_path: Path):
-    for f in floder_path.iterdir():
-        target = floder_path / f.name
-        if target.is_dir():
-            remove_empty_folder(target)
-            if not os.listdir(target):
-                remove(target)
+    '''
+    删除空目录
+    '''
+    for file in floder_path.iterdir():
+        if file.is_dir():
+            remove_empty_folder(file)
+            if not os.listdir(file):
+                remove(file)
 
 
 def load_cache_file(file_path: Path):
+    '''
+    载入已解压文件列表
+    '''
     file = file_path.parent / f'{file_path.stem}.sf'
     if not file.exists():
         return []
@@ -108,7 +99,10 @@ def load_cache_file(file_path: Path):
     return arr_tmp
 
 
-def add_cache_file(file_path: Path, save_file_list: list):
+def save_cache_file(file_path: Path, save_file_list: list):
+    '''
+    将解压文件添加到缓存文件
+    '''
     file = file_path.parent / f'{file_path.stem}.sf'
     tmp = load_cache_file(file)
     tmp.extend(save_file_list)
@@ -121,16 +115,66 @@ def add_cache_file(file_path: Path, save_file_list: list):
 def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
     if deep == 0:
         file_list = []
-    if deep > max_deep:
-        return file_list
-    for f in floder_path.iterdir():
-        if (floder_path / f.name).is_dir():
-            get_all_file_name_list(floder_path / f.name, file_list, deep=deep+1)
-        if (floder_path / f.name).is_file():
-            file_list.append(f.name)
+    for file in floder_path.iterdir():
+        if file.is_dir():
+            get_all_file_name_list(file, file_list, deep+1)
+        if file.is_file():
+            file_list.append(file.name)
     return file_list
+
 
 def save_file_name(extract_path, deleted_list):
     file_list = get_all_file_name_list(extract_path)
     file_list += deleted_list
     write("\n".join(file_list), extract_path / 'filenames.txt')
+
+
+def get_type_file_list(floder_path: Path, type_list, file_list=[], deep=0):
+    '''
+    获取特定文件类型的文件列表
+    '''
+    if type(type_list) == str:
+        type_list = file_type[type_list]
+    if deep == 0:
+        file_list = []
+    for file in floder_path.iterdir():
+        if file.is_dir():
+            get_type_file_list(file, type_list, file_list, deep+1)
+        if file.is_file():
+            if file.suffix in type_list:
+                file_list.append(file)
+    return file_list
+
+
+def classify_file(floder_path: Path):
+    '''
+    将目标文件夹下的文件，按照文件类型分类到不同的文件夹，这些文件夹存储在target_path下
+    '''
+    temp_path = floder_path.parent/'temp'
+    for tp in file_type.keys():
+        file_list = get_type_file_list(floder_path, tp)
+        (temp_path/tp).mkdir(parents=True, exist_ok=True)
+        for file in file_list:
+            tar_file = get_tar_file(file)
+            move(file, temp_path/tp/tar_file)
+
+    other_file_list = get_file_list(floder_path)
+    (temp_path/'other').mkdir(parents=True, exist_ok=True)
+
+    for file in other_file_list:
+        tar_file = get_tar_file(file)
+        move(file, temp_path/'other'/tar_file)
+    remove_empty_folder(floder_path)
+
+    for file in temp_path.iterdir():
+        move(file, floder_path)
+
+    remove(temp_path)
+
+
+def get_tar_file(file):
+    if str(os.stat(file).st_size) in str(file.name):
+        tar_file = str(file.name)
+    else:
+        tar_file = f'{os.stat(file).st_size}-{str(file.name)}'
+    return tar_file

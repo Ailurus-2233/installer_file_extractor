@@ -3,6 +3,5 @@ test/
 .vscode/
 __pycache__/
 utils/__pycache__/
-uniextract2/log/
 cache/
-uniextract2/*
+uniextract2/

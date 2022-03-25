@@ -30,6 +30,10 @@ def run_extract(file_path, extract_path):
 def check_extract_path(file_path, extract_path):
     temp_path = Path(tempfile.gettempdir()) / file_path.name
     extract_path2 = Path(str(extract_path)+"_已解包")
+
+    flag = False
+    ext_path = None
+
     while temp_path.exists() or (extract_path.exists() or extract_path2.exists()):
         if not (extract_path.exists() or extract_path2.exists()):
             time.sleep(1)
@@ -37,9 +41,24 @@ def check_extract_path(file_path, extract_path):
             if (Path(tempfile.gettempdir()) / file_path.stem).exists():
                 uf.remove(Path(tempfile.gettempdir()) / file_path.stem)
             if extract_path2.exists():
-                return extract_path2, True
-            return extract_path, True
-    return None, False
+                ext_path = extract_path2
+                flag = True
+                break
+            else:
+                ext_path = extract_path
+                flag = True
+                break
+
+    if flag:
+        for file in ext_path.iterdir():
+            if '.rsrc' in str(file):
+                flag = False
+                break
+        if not flag:
+            uf.remove(ext_path)
+            ext_path = None
+
+    return ext_path, flag
 
 
 def extract_time_out():
