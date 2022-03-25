@@ -43,19 +43,24 @@ def main(args):
             bin_list = uf.get_type_file_list(extract_path, "bin")
             ext_list = uf.get_type_file_list(extract_path, "ext")
             file_list = bin_list + ext_list
+            count = 0
             for file in track(file_list, description=f"Extracting child file {deep + 1}"):
+                count += 1
                 if file in extract_history_list or file.suffix in continue_type:
+                    sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
                     continue
                 ue.extract_sub(file, file.parent/file.stem)
                 extract_history_list.append(file)
+                sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
             log.info(f"Classifying extract_path {extract_path}")
             uf.classify_file(extract_path)
             uf.save_cache_file(extract_path, extract_history_list)
+        sent_info(args.task_id, 1, extract_path, 1)
         
         file_name = uf.get_all_file_name_list(extract_path)
         uf.save_file_name(extract_path, file_name)
 
-        # uf.remove_useless_file(extract_path)
+        uf.remove_useless_file(extract_path)
     else:
         # 发送请求解压失败:
         sent_info(args.task_id, 0, extract_path, -1)

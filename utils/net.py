@@ -1,7 +1,7 @@
 import requests
 import json
 from config import url
-import utils.log as log
+from utils.log import log
 
 def sent_info(task_id, percent, extract_path, status):
     data = {
