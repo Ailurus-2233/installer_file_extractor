@@ -6,9 +6,6 @@ from func_timeout import func_set_timeout, FunctionTimedOut
 import os
 import math
 
-type_list = [".zip", ".ZIP", ".rar", ".RAR", ".gz", ".GZ", ".iso",
-             ".ISO", ".cab", ".CAB", ".7z", ".7Z"]
-
 
 @func_set_timeout(800)
 def run_extract_5(file_path, extract_path):
@@ -76,7 +73,6 @@ def extract_sub(file_path: Path, extract_path: Path):
         except FileNotFoundError:
             log.error(f"File not found {file_path}")
         _, flag = uu.check_extract_path(file_path, extract_path)
-        if flag and file_path.suffix in type_list:
-            uf.remove_file(file_path)
+        if flag:
             return file_path.name
         return None
