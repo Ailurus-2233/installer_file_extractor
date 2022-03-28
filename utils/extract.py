@@ -80,7 +80,7 @@ def extract_sub(file_path: Path, extract_path: Path):
 
 
 def extract_sub_temp(file_path: Path, root_extract_path: Path):
-    temp = Path(temp_path)/file_path.name
+    temp = Path(temp_path)/f'tmp{file_path.suffix}'
     temp_ext = temp.parent/temp.stem
     if not temp.exists():
         uf.copy(file_path, temp)
@@ -93,5 +93,8 @@ def extract_sub_temp(file_path: Path, root_extract_path: Path):
         uf.classify_file(temp_ext)
         for tp in temp_ext.iterdir():
             for file in tp.iterdir():
-                uf.move(file, root_extract_path/tp.name)
+                if (root_extract_path/tp.name/file.name).exists():
+                    uf.remove_file(file)
+                else:
+                    uf.move(file, root_extract_path/tp.name)
         uf.remove_empty_folder(Path(temp_path))

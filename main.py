@@ -58,7 +58,7 @@ def main(args):
                 extract_history_list.append(file)
                 sent_info(args.task_id, deep/ext_deep + count /
                           len(file_list)/3, extract_path, 0)
-            uf.save_cache_file(extract_path, extract_history_list)
+                uf.save_cache_file(extract_path, extract_history_list)
         sent_info(args.task_id, 1, extract_path, 1)
 
         file_name = uf.get_all_file_name_list(extract_path)
