@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from utils.log import log
 from config import save_list, file_type
+import stat
 
 
 def write(info, file_path):
@@ -30,10 +31,15 @@ def copy(file, new_file):
 
 
 def remove(folder_path):
-    try:
-        shutil.rmtree(folder_path)
-    except:
-        log.error(f'删除文件夹失败：{folder_path}')
+    if folder_path.exists():
+        shutil.rmtree(folder_path, onerror=readonly_handler)
+    else:
+        pass
+
+
+def readonly_handler(func, path, exc_info):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
 
 
 def backup(file_path):
@@ -114,21 +120,24 @@ def save_cache_file(file_path: Path, save_file_list: list):
             f.write(str(sfile) + '\n')
 
 
-def get_all_file_name_list(floder_path: Path, file_list=[], deep=0):
+def get_all_file_list(floder_path: Path, file_list=[], deep=0):
     if deep == 0:
         file_list = []
     for file in floder_path.iterdir():
         if file.is_dir():
-            get_all_file_name_list(file, file_list, deep+1)
+            get_all_file_list(file, file_list, deep+1)
         if file.is_file():
-            file_list.append(file.name)
+            file_list.append(file)
     return file_list
 
 
 def save_file_name(extract_path, deleted_list):
-    file_list = get_all_file_name_list(extract_path)
+    file_list = get_all_file_list(extract_path)
     file_list += deleted_list
-    write("\n".join(file_list), extract_path / 'filenames.txt')
+    s = ""
+    for f in file_list:
+        s += f'{f.name}\n'
+    write(s, extract_path / 'filenames.txt')
 
 
 def get_type_file_list(floder_path: Path, type_list, file_list=[], deep=0):
@@ -170,7 +179,6 @@ def classify_file(floder_path: Path):
 
     for file in temp_path.iterdir():
         move(file, floder_path)
-
     remove(temp_path)
 
 

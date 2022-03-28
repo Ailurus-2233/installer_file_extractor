@@ -16,6 +16,7 @@ ext_deep = 3
 uniextract2 位置
 '''
 uniextract_path = Path('C:/Users/supplychain/Documents/file_unpack/uniextract2')
+# uniextract_path = Path('./uniextract2')
 uniextract = uniextract_path/'Uniextract.exe'
 
 
@@ -50,4 +51,10 @@ file_type = {
 解压文件临时目录
 '''
 temp_path = Path('C:/tmp/software')
+# temp_path = Path('D:/Documents/项目开发/工控供应链项目/temp')
 
+
+'''
+文件名长度限制
+'''
+file_name_len = 100

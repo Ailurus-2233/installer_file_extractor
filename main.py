@@ -1,11 +1,12 @@
 import argparse
+from msilib.schema import Error
 from pathlib import Path
 import utils.file as uf
 import utils.uniextract as uu
 import utils.extract as ue
 from tqdm import tqdm
 from utils.net import sent_info
-from config import exe_size, ext_deep, temp_path
+from config import exe_size, ext_deep
 from utils.log import log
 import os
 
@@ -59,7 +60,7 @@ def main(args):
                 uf.save_cache_file(extract_path, extract_history_list)
         sent_info(args.task_id, 1, extract_path, 1)
 
-        file_name = uf.get_all_file_name_list(extract_path)
+        file_name = uf.get_all_file_list(extract_path)
         uf.save_file_name(extract_path, file_name)
 
         uf.remove_useless_file(extract_path)
@@ -74,4 +75,11 @@ if __name__ == '__main__':
     parse.add_argument("--file_path", '-fp')
     parse.add_argument("--extract_path", "-ep", default="/sub")
     parse.add_argument("--task_id", "-ti")
-    main(parse.parse_args())
+    args = parse.parse_args()
+    try:
+        main(args)
+    except Error as e:
+        sent_info(args.task_id, 0, "", -1)
+        log.error(e.args)
+        log.error(e.strerror)
+        log.error(e.errno)
