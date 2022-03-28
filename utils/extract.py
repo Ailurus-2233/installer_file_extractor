@@ -82,8 +82,9 @@ def extract_sub(file_path: Path, extract_path: Path):
 def extract_sub_temp(file_path: Path, root_extract_path: Path):
     temp = Path(temp_path)/f'tmp{file_path.suffix}'
     temp_ext = temp.parent/temp.stem
-    if not temp.exists():
-        uf.copy(file_path, temp)
+    uf.remove(temp_path)
+    Path(temp_path).mkdir(parents=True, exist_ok=True)
+    uf.copy(file_path, temp)
     extract_root(temp, temp_ext)
     
     uf.remove_file(temp)

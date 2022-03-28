@@ -49,5 +49,5 @@ file_type = {
 '''
 解压文件临时目录
 '''
-temp_path = Path('C:/tmp')
+temp_path = Path('C:/tmp/software')
 

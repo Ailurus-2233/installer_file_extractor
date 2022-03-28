@@ -11,8 +11,6 @@ import os
 
 
 def main(args):
-    Path(temp_path).mkdir(parents=True, exist_ok=True)
-
     file_path = Path(args.file_path)
     extract_path = args.extract_path
 
