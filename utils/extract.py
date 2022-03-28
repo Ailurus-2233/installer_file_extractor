@@ -5,6 +5,7 @@ from utils.log import log
 from func_timeout import func_set_timeout, FunctionTimedOut
 import os
 import math
+from config import temp_path
 
 
 @func_set_timeout(800)
@@ -76,3 +77,21 @@ def extract_sub(file_path: Path, extract_path: Path):
         if flag:
             return file_path.name
         return None
+
+
+def extract_sub_temp(file_path: Path, root_extract_path: Path):
+    temp = Path(temp_path)/file_path.name
+    temp_ext = temp.parent/temp.stem
+    if not temp.exists():
+        uf.copy(file_path, temp)
+    extract_root(temp, temp_ext)
+    
+    uf.remove_file(temp)
+    temp_ext, flag = uu.check_extract_path(temp, temp_ext)
+
+    if flag:
+        uf.classify_file(temp_ext)
+        for tp in temp_ext.iterdir():
+            for file in tp.iterdir():
+                uf.move(file, root_extract_path/tp.name)
+        uf.remove_empty_folder(Path(temp_path))

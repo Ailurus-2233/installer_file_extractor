@@ -5,11 +5,13 @@ import utils.uniextract as uu
 import utils.extract as ue
 from rich.progress import track
 from utils.net import sent_info
-from config import ext_deep
+from config import ext_deep, temp_path
 from utils.log import log
 
 
 def main(args):
+    Path(temp_path).mkdir(parents=True, exist_ok=True)
+    
     file_path = Path(args.file_path)
     extract_path = args.extract_path
 
@@ -47,15 +49,13 @@ def main(args):
             for file in track(file_list, description=f"Extracting child file {deep + 1}"):
                 count += 1
                 if file in extract_history_list or file.suffix in continue_type:
-                    sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
+                    # sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
                     continue
-                ue.extract_sub(file, file.parent/file.stem)
+                ue.extract_sub_temp(file, extract_path)
                 extract_history_list.append(file)
-                sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
-            log.info(f"Classifying extract_path {extract_path}")
-            uf.classify_file(extract_path)
+                # sent_info(args.task_id, deep/ext_deep + count/len(file_list)/3, extract_path, 0)
             uf.save_cache_file(extract_path, extract_history_list)
-        sent_info(args.task_id, 1, extract_path, 1)
+        # sent_info(args.task_id, 1, extract_path, 1)
         
         file_name = uf.get_all_file_name_list(extract_path)
         uf.save_file_name(extract_path, file_name)

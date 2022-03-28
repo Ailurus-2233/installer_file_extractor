@@ -1,10 +1,8 @@
 import shutil
 import os
 from pathlib import Path
-
 from utils.log import log
-
-from config import exe_size, save_list, file_type
+from config import save_list, file_type
 
 
 def write(info, file_path):
@@ -27,6 +25,10 @@ def move(old_path, new_path):
     shutil.move(str(old_path), str(new_path))
 
 
+def copy(file, new_file):
+    shutil.copyfile(file, new_file)
+
+
 def remove(folder_path):
     try:
         shutil.rmtree(folder_path)
@@ -35,11 +37,11 @@ def remove(folder_path):
 
 
 def backup(file_path):
-    shutil.copyfile(file_path, str(file_path) + ".bak")
+    copy(file_path, str(file_path) + ".bak")
 
 
 def restore(file_path):
-    shutil.copyfile(str(file_path) + ".bak", file_path)
+    copy(str(file_path) + ".bak", file_path)
 
 
 def remove_file(file_path):

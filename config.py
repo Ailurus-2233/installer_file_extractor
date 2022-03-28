@@ -15,8 +15,8 @@ ext_deep = 3
 '''
 uniextract2 位置
 '''
-uniextract_path = Path('C:/Users/supplychain/Documents/file_unpack/uniextract2')
-# uniextract_path = Path('./uniextract2')
+# uniextract_path = Path('C:/Users/supplychain/Documents/file_unpack/uniextract2')
+uniextract_path = Path('./uniextract2')
 uniextract = uniextract_path/'Uniextract.exe'
 
 
@@ -45,3 +45,11 @@ file_type = {
             '.msi', '.msm', '.msp', '.msu', '.rar', '.tar', '.tbz2', '.tgz', '.txz', '.tz', 
             '.zip']
 }
+
+
+'''
+解压文件临时目录
+'''
+# temp_path = 'C:/tmp'
+temp_path = Path('D:/Documents/项目开发/工控供应链项目/tmp')
+
