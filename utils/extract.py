@@ -8,7 +8,7 @@ import math
 from config import temp_path, file_name_len
 
 
-@func_set_timeout(800)
+@func_set_timeout(600)
 def run_extract_5(file_path, extract_path):
     uu.run_extract(file_path, extract_path)
 

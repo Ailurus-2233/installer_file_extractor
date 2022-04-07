@@ -1,5 +1,4 @@
 import argparse
-from msilib.schema import Error
 from pathlib import Path
 import utils.file as uf
 import utils.uniextract as uu
@@ -9,6 +8,7 @@ from utils.net import sent_info
 from config import exe_size, ext_deep
 from utils.log import log
 import os
+import traceback
 
 
 def main(args):
@@ -78,8 +78,7 @@ if __name__ == '__main__':
     args = parse.parse_args()
     try:
         main(args)
-    except Error as e:
+    except Exception as e:
         sent_info(args.task_id, 0, "", -1)
-        log.error(e.args)
-        log.error(e.strerror)
-        log.error(e.errno)
+        exstr = traceback.format_exc()
+        log.error(exstr)

@@ -1,3 +1,4 @@
+from tkinter import N
 import utils.file as uf
 from pathlib import Path
 import os
@@ -6,6 +7,7 @@ import time
 import psutil
 from config import uniextract, uniextract_path
 from utils.log import log
+from config import kill_name
 
 
 def add_batch_queue(file_path, extract_path):
@@ -17,7 +19,7 @@ def add_batch_queue(file_path, extract_path):
 
 
 def run_extract(file_path, extract_path):
-    kill_process("UniExtract.exe")
+    kill_all_process()
     if extract_path == "/sub":
         extract_path = file_path.parent/file_path.stem
     if (Path(tempfile.gettempdir()) / file_path.stem).exists():
@@ -62,11 +64,8 @@ def check_extract_path(file_path, extract_path):
 
 
 def extract_time_out():
-    log.info("time out! kill process named IsXunpack.exe")
-    try:
-        kill_process("IsXunpack.exe")
-    except:
-        log.error("no process named IsXunpack.exe")
+    log.info("time out!")
+    kill_all_process()
     batch = uniextract_path/"batch.queue"
     try:
         uf.remove(batch)
@@ -89,3 +88,8 @@ def kill_process(name):
                     log.error(f"kill process {process_name} failed")
         except:
             continue
+
+
+def kill_all_process():
+    for name in kill_name:
+        kill_process(name)

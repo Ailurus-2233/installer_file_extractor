@@ -23,7 +23,10 @@ def append(info, file_path):
 
 
 def move(old_path, new_path):
-    shutil.move(str(old_path), str(new_path))
+    try:
+        shutil.move(str(old_path), str(new_path))
+    except:
+        remove_file(str(old_path))
 
 
 def copy(file, new_file):
@@ -31,15 +34,16 @@ def copy(file, new_file):
 
 
 def remove(folder_path):
-    if folder_path.exists():
-        shutil.rmtree(folder_path, onerror=readonly_handler)
-    else:
-        pass
-
-
-def readonly_handler(func, path, exc_info):
-    os.chmod(path, stat.S_IWRITE)
-    func(path)
+    while 1:
+        if not os.path.exists(folder_path):
+            break
+        try:
+            shutil.rmtree(folder_path)
+        except PermissionError as e:
+            err_file_path = str(e).split("\'", 2)[1]
+            log.error(f"PermissionError: {err_file_path}")
+            if os.path.exists(err_file_path):
+                os.chmod(err_file_path, stat.S_IWUSR)
 
 
 def backup(file_path):
@@ -136,7 +140,10 @@ def save_file_name(extract_path, deleted_list):
     file_list += deleted_list
     s = ""
     for f in file_list:
-        s += f'{f.name}\n'
+        try:
+            s += f'{str(f.name).split("-", 1)[1]}\n'
+        except IndexError:
+            s += f'{str(f.name)}\n'
     write(s, extract_path / 'filenames.txt')
 
 
