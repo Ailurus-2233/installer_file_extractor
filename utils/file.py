@@ -4,6 +4,7 @@ from pathlib import Path
 from utils.log import log
 from config import save_list, file_type
 import stat
+from utils import extract as ue 
 
 
 def write(info, file_path):
@@ -25,7 +26,10 @@ def append(info, file_path):
 def move(old_path, new_path):
     try:
         shutil.move(str(old_path), str(new_path))
-    except:
+    except PermissionError:
+        ue.kill_all_process()
+        remove_file(str(old_path))
+    except Exception:
         remove_file(str(old_path))
 
 
@@ -165,6 +169,7 @@ def get_type_file_list(floder_path: Path, type_list, file_list=[], deep=0):
 
 
 def classify_file(floder_path: Path):
+    ue.kill_all_process()
     '''
     将目标文件夹下的文件，按照文件类型分类到不同的文件夹，这些文件夹存储在target_path下
     '''
