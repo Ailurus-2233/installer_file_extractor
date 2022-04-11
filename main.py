@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+import zipfile
 import utils.file as uf
 import utils.uniextract as uu
 import utils.extract as ue
@@ -50,6 +51,22 @@ def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
                     continue
                 if file.suffix in ['.exe', '.EXE'] and os.stat(file).st_size < exe_size:
                     continue
+
+                '''
+                判断zip是否加密
+                '''
+                zip_passwd_flag = False
+                try:
+                    if file.suffix in ['.zip', '.ZIP']:
+                        zf = zf = zipfile.ZipFile(Path(file))
+                        for i in zf.infolist():
+                            if i.flag_bits & 0x01:
+                                zip_passwd_flag = True
+                    if zip_passwd_flag:
+                        continue
+                except:
+                    continue
+
                 ue.extract_sub_temp(file, extract_path)
                 extract_history_list.append(file)
                 sent_info(task_id, deep/ext_deep + count /
@@ -60,7 +77,7 @@ def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
         file_name = uf.get_all_file_list(extract_path)
         uf.save_file_name(extract_path, file_name)
 
-        uf.remove_useless_file(extract_path)
+        # uf.remove_useless_file(extract_path)
     else:
         # 发送请求解压失败:
         sent_info(task_id, 0, extract_path, -1, test_flag)
@@ -100,6 +117,6 @@ if __name__ == '__main__':
     try:
         main(args)
     except Exception as e:
-        sent_info(args.task_id, 0, "", -1)
+        sent_info(args.task_id, 0, "", -1, args.test_flag)
         exstr = traceback.format_exc()
         log.error(exstr)

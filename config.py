@@ -16,8 +16,8 @@ ext_deep = 3
 '''
 uniextract2 位置
 '''
-# uniextract_path = Path('../python_env/python_shell/file_unpack/uniextract2')
-uniextract_path = Path('./uniextract2')
+uniextract_path = Path('../python_env/python_shell/file_unpack/uniextract2')
+# uniextract_path = Path('./uniextract2')
 uniextract = uniextract_path/'Uniextract.exe'
 
 
@@ -51,8 +51,8 @@ file_type = {
 '''
 解压文件临时目录
 '''
-# temp_path = Path('../upload/tmp_software/')
-temp_path = Path('D:/Documents/项目开发/工控供应链项目/temp')
+temp_path = Path('../upload/tmp_software/')
+# temp_path = Path('C:/temp')
 
 
 '''

@@ -99,4 +99,4 @@ def extract_sub_temp(file_path: Path, root_extract_path: Path):
                     uf.remove_file(file)
                 else:
                     uf.move(file, root_extract_path/tp.name)
-        uf.remove_empty_folder(Path(temp_path))
+        uf.remove(Path(temp_path))

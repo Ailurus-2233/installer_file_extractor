@@ -2,10 +2,10 @@ import shutil
 import os
 from pathlib import Path
 from utils.log import log
-from config import save_list, file_type
+from config import save_list, file_type, temp_path
 import stat
 from utils import extract as ue 
-
+from utils import uniextract as uu
 
 def write(info, file_path):
     '''
@@ -27,9 +27,11 @@ def move(old_path, new_path):
     try:
         shutil.move(str(old_path), str(new_path))
     except PermissionError:
-        ue.kill_all_process()
+        uu.kill_all_process()
         remove_file(str(old_path))
-    except Exception:
+    except FileExistsError:
+        remove_file(str(old_path))
+    except:
         remove_file(str(old_path))
 
 
@@ -44,10 +46,29 @@ def remove(folder_path):
         try:
             shutil.rmtree(folder_path)
         except PermissionError as e:
+            if folder_path == temp_path/'tmp':
+                break
             err_file_path = str(e).split("\'", 2)[1]
             log.error(f"PermissionError: {err_file_path}")
             if os.path.exists(err_file_path):
                 os.chmod(err_file_path, stat.S_IWUSR)
+        except FileNotFoundError as e:
+            remove_path(folder_path)
+
+
+def remove_path(folder_path):
+    file_list = os.listdir(folder_path)
+
+    for file_ in file_list:
+        new_folder = "{}\\new".format(folder_path)
+        del_folder = "{}\\{}".format(folder_path, file_)
+        if not os.path.exists(new_folder):
+            os.mkdir(new_folder)
+        os.chdir(folder_path)
+        cmd_ = "robocopy {} {} /purge".format(new_folder, del_folder)   
+        os.system(cmd_)
+        os.removedirs(del_folder)
+        os.removedirs(new_folder)
 
 
 def backup(file_path):
@@ -65,37 +86,29 @@ def remove_file(file_path):
         pass
 
 
-def get_file_list(floder_path: Path, file_list=[], deep=0):
+def get_file_list(folder_path: Path, file_list=[], deep=0):
     if deep == 0:
         file_list = []
-    for file in floder_path.iterdir():
+    for file in folder_path.iterdir():
         if file.is_dir():
-            get_file_list(file, file_list, deep+1)
+            try:
+                get_file_list(file, file_list, deep+1)
+            except FileNotFoundError:
+                continue
         else:
             file_list.append(file)
     return file_list
 
 
-def remove_useless_file(floder_path: Path):
+def remove_useless_file(folder_path: Path):
     '''
     删除无用文件
     '''
-    for file in floder_path.iterdir():
+    for file in folder_path.iterdir():
         if file.is_dir():
             remove_useless_file(file)
         if file.is_file() and file.suffix not in save_list:
             remove_file(file)
-
-
-def remove_empty_folder(floder_path: Path):
-    '''
-    删除空目录
-    '''
-    for file in floder_path.iterdir():
-        if file.is_dir():
-            remove_empty_folder(file)
-            if not os.listdir(file):
-                remove(file)
 
 
 def load_cache_file(file_path: Path):
@@ -128,10 +141,10 @@ def save_cache_file(file_path: Path, save_file_list: list):
             f.write(str(sfile) + '\n')
 
 
-def get_all_file_list(floder_path: Path, file_list=[], deep=0):
+def get_all_file_list(folder_path: Path, file_list=[], deep=0):
     if deep == 0:
         file_list = []
-    for file in floder_path.iterdir():
+    for file in folder_path.iterdir():
         if file.is_dir():
             get_all_file_list(file, file_list, deep+1)
         if file.is_file():
@@ -151,7 +164,7 @@ def save_file_name(extract_path, deleted_list):
     write(s, extract_path / 'filenames.txt')
 
 
-def get_type_file_list(floder_path: Path, type_list, file_list=[], deep=0):
+def get_type_file_list(folder_path: Path, type_list, file_list=[], deep=0):
     '''
     获取特定文件类型的文件列表
     '''
@@ -159,38 +172,48 @@ def get_type_file_list(floder_path: Path, type_list, file_list=[], deep=0):
         type_list = file_type[type_list]
     if deep == 0:
         file_list = []
-    for file in floder_path.iterdir():
+    for file in folder_path.iterdir():
         if file.is_dir():
-            get_type_file_list(file, type_list, file_list, deep+1)
+            try:
+                get_type_file_list(file, type_list, file_list, deep+1)
+            except FileNotFoundError:
+                print(len(str(folder_path)))
+                continue
         if file.is_file():
             if file.suffix in type_list:
                 file_list.append(file)
+
     return file_list
 
 
-def classify_file(floder_path: Path):
-    ue.kill_all_process()
+def classify_file(folder_path: Path):
+    uu.kill_all_process()
     '''
     将目标文件夹下的文件，按照文件类型分类到不同的文件夹，这些文件夹存储在target_path下
     '''
-    temp_path = floder_path.parent/'temp'
+    temp_path = folder_path.parent/'temp'
     for tp in file_type.keys():
-        file_list = get_type_file_list(floder_path, tp)
+        file_list = get_type_file_list(folder_path, tp)
         (temp_path/tp).mkdir(parents=True, exist_ok=True)
         for file in file_list:
             tar_file = get_tar_file(file)
             move(file, temp_path/tp/tar_file)
 
-    other_file_list = get_file_list(floder_path)
+    other_file_list = get_file_list(folder_path)
     (temp_path/'other').mkdir(parents=True, exist_ok=True)
 
     for file in other_file_list:
+        if file.name == "symtype":
+            remove(file)
+            continue
         tar_file = get_tar_file(file)
         move(file, temp_path/'other'/tar_file)
-    remove_empty_folder(floder_path)
+
+    remove(folder_path)
+    folder_path.mkdir(parents=True, exist_ok=True)
 
     for file in temp_path.iterdir():
-        move(file, floder_path)
+        move(file, folder_path)
     remove(temp_path)
 
 
