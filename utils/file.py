@@ -46,8 +46,6 @@ def remove(folder_path):
         try:
             shutil.rmtree(folder_path)
         except PermissionError as e:
-            if folder_path == temp_path/'tmp':
-                break
             err_file_path = str(e).split("\'", 2)[1]
             log.error(f"PermissionError: {err_file_path}")
             if os.path.exists(err_file_path):
@@ -56,19 +54,12 @@ def remove(folder_path):
             remove_path(folder_path)
 
 
-def remove_path(folder_path):
-    file_list = os.listdir(folder_path)
-
-    for file_ in file_list:
-        new_folder = "{}\\new".format(folder_path)
-        del_folder = "{}\\{}".format(folder_path, file_)
-        if not os.path.exists(new_folder):
-            os.mkdir(new_folder)
-        os.chdir(folder_path)
-        cmd_ = "robocopy {} {} /purge".format(new_folder, del_folder)   
-        os.system(cmd_)
-        os.removedirs(del_folder)
-        os.removedirs(new_folder)
+def remove_path(folder_path: Path):
+    new_folder = folder_path.parent/'new'
+    new_folder.mkdir(parents=True, exist_ok=True)
+    cmd = "robocopy {} {} /purge".format(new_folder, folder_path)   
+    os.system(cmd)
+    os.removedirs(new_folder)
 
 
 def backup(file_path):
@@ -177,7 +168,6 @@ def get_type_file_list(folder_path: Path, type_list, file_list=[], deep=0):
             try:
                 get_type_file_list(file, type_list, file_list, deep+1)
             except FileNotFoundError:
-                print(len(str(folder_path)))
                 continue
         if file.is_file():
             if file.suffix in type_list:
@@ -203,8 +193,8 @@ def classify_file(folder_path: Path):
     (temp_path/'other').mkdir(parents=True, exist_ok=True)
 
     for file in other_file_list:
-        if file.name == "symtype":
-            remove(file)
+        if file.name in ["symtype", 'symtype2']:
+            remove_file(file)
             continue
         tar_file = get_tar_file(file)
         move(file, temp_path/'other'/tar_file)
