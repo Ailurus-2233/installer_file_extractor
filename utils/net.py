@@ -6,8 +6,8 @@ from utils.log import log
 global flag
 flag = True
 
-def sent_info(task_id, percent, extract_path, status, test_flag):
-    if test_flag:
+def sent_info(task_id, percent, extract_path, status):
+    if task_id == -1:
         return
     global flag
     data = {

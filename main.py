@@ -12,7 +12,7 @@ import os
 import traceback
 
 
-def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
+def extract_file(task_id, file_path, extract_path, ex_deep=ext_deep):
     '''
     解压安装包文件
     '''
@@ -47,7 +47,7 @@ def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
                 count += 1
                 if file in extract_history_list or file.suffix in continue_type:
                     sent_info(task_id, deep/ext_deep + count /
-                              len(file_list)/3, extract_path, 0, test_flag)
+                              len(file_list)/3, extract_path, 0)
                     continue
                 if file.suffix in ['.exe', '.EXE'] and os.stat(file).st_size < exe_size:
                     continue
@@ -70,9 +70,9 @@ def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
                 ue.extract_sub_temp(file, extract_path)
                 extract_history_list.append(file)
                 sent_info(task_id, deep/ext_deep + count /
-                          len(file_list)/3, extract_path, 0, test_flag)
+                          len(file_list)/3, extract_path, 0)
                 uf.save_cache_file(extract_path, extract_history_list)
-        sent_info(task_id, 1, extract_path, 1, test_flag)
+        sent_info(task_id, 1, extract_path, 1)
 
         file_name = uf.get_all_file_list(extract_path)
         uf.save_file_name(extract_path, file_name)
@@ -80,7 +80,7 @@ def extract_file(task_id, file_path, extract_path, test_flag, ex_deep=ext_deep):
         # uf.remove_useless_file(extract_path)
     else:
         # 发送请求解压失败:
-        sent_info(task_id, 0, extract_path, -1, test_flag)
+        sent_info(task_id, 0, extract_path, -1)
         log.error(f"Extract {file_path} failed")
 
 
@@ -98,10 +98,9 @@ def extract_folder(folder_path: Path):
 def main(args):
     file_path = Path(args.file_path)
     extract_path = args.extract_path
-    test_flag = args.test_flag
     task_id = args.task_id
     if not args.folder:
-        extract_file(task_id, file_path, extract_path, test_flag)
+        extract_file(task_id, file_path, extract_path)
     else:
         extract_folder(file_path)
 
@@ -111,12 +110,11 @@ if __name__ == '__main__':
     parse.add_argument("--file_path", '-fp')
     parse.add_argument("--extract_path", "-ep", default="/sub")
     parse.add_argument("--task_id", "-ti", default=-1)
-    parse.add_argument("--test_flag", "-tf", default=False)
     parse.add_argument("--folder", "-f", default=False)
     args = parse.parse_args()
     try:
         main(args)
     except Exception as e:
-        sent_info(args.task_id, 0, "", -1, args.test_flag)
+        sent_info(args.task_id, 0, "", -1)
         exstr = traceback.format_exc()
         log.error(exstr)
