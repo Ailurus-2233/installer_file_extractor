@@ -5,3 +5,5 @@ __pycache__/
 utils/__pycache__/
 cache/
 UniExtract/
+build/
+dist/

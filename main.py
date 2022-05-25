@@ -77,7 +77,7 @@ def extract_file(task_id, file_path, extract_path, ex_deep=ext_deep):
         file_name = uf.get_all_file_list(extract_path)
         uf.save_file_name(extract_path, file_name)
 
-        # uf.remove_useless_file(extract_path)
+        uf.remove_useless_file(extract_path)
     else:
         # 发送请求解压失败:
         sent_info(task_id, 0, extract_path, -1)
