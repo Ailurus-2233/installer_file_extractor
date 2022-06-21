@@ -36,7 +36,7 @@ python main.py \
 eg:
 在非分析系统中选择一个由安装包构成的文件夹
 ```python
-pytohn main.py \
+python main.py \
 --file_path "C:\\temp"
 --folder true 
 ```
