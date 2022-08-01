@@ -41,6 +41,10 @@ def copy(file, new_file):
 
 def remove(folder_path):
     while 1:
+        try:
+            os.system(f'rd /s /q "{folder_path}"')
+        except:
+            pass
         if not os.path.exists(folder_path):
             break
         try:
@@ -186,6 +190,10 @@ def classify_file(folder_path: Path):
         file_list = get_type_file_list(folder_path, tp)
         (temp_path/tp).mkdir(parents=True, exist_ok=True)
         for file in file_list:
+            try:
+                os.stat(file)
+            except:
+                continue
             tar_file = get_tar_file(file)
             move(file, temp_path/tp/tar_file)
 
@@ -193,6 +201,10 @@ def classify_file(folder_path: Path):
     (temp_path/'other').mkdir(parents=True, exist_ok=True)
 
     for file in other_file_list:
+        try:
+            os.stat(file)
+        except:
+            continue
         if file.name in ["symtype", 'symtype2']:
             remove_file(file)
             continue
