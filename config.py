@@ -1,4 +1,5 @@
 from pathlib import Path
+from turtle import update
 
 
 '''
@@ -31,7 +32,8 @@ exe_size = 50 * 1024 * 1024
 文件
 '''
 save_list = ['.exe', '.EXE', '.dll', '.DLL', '.lib', '.LIB', '.md', '.MD', '.msi', '.MSI',
-             '.txt', '.TXT', '.json', '.JSON', '.csv', '.CSV', '.html', '.HTML', '.bin', '.BIN']
+             '.txt', '.TXT', '.json', '.JSON', '.csv', '.CSV', '.html', '.HTML', '.bin', '.BIN',
+             '.jar', '.JAR']
 
 
 '''
@@ -44,7 +46,8 @@ file_type = {
             '.LZ', '.MSI', '.MSM', '.MSP', '.MSU', '.RAR', '.TAR', '.TBZ2', '.TGZ', '.TXZ',
             '.TZ', '.ZIP', '.bz2', '.cab', '.cpio', '.gz', '.img', '.ipk', '.iso', '.lz',
             '.msi', '.msm', '.msp', '.msu', '.rar', '.tar', '.tbz2', '.tgz', '.txz', '.tz',
-            '.zip']
+            '.zip'],
+    'jar': ['.jar', '.JAR'],
 }
 
 
@@ -81,3 +84,13 @@ kill_name = ['7ZSplit.exe', 'acefile.exe', 'arc.exe', 'arc_conv.exe', 'arj.exe',
              'unzip.exe', 'unzoo.exe', 'upx.exe', 'utagedec.exe', 'uudeview.exe', 'VIS3Ext.exe',
              'WUN.exe', 'bcm.exe', 'UnRAR.exe', 'zpaq.exe', '7z.exe', 'bcm.exe', 'UnRAR.exe',
              'zpaq.exe', 'xor.exe', 'UniExtract.exe']
+
+'''
+Linux 文件分类
+'''
+linux_file_type = ['.deb', '.DEB', '.rpm', '.RPM']
+
+'''
+固件文件类型
+'''
+firmware_file_type = ['.bin', '.BIN']

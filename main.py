@@ -6,13 +6,44 @@ import utils.uniextract as uu
 import utils.extract as ue
 from tqdm import tqdm
 from utils.net import sent_info
-from config import exe_size, ext_deep
+from config import exe_size, ext_deep, linux_file_type, firmware_file_type
 from utils.log import log
 import os
 import traceback
 
 
-def extract_file(task_id, file_path, extract_path, ex_deep=ext_deep):
+def extract_liunx_software(task_id, file_path, extract_path):
+    '''
+    解压安装包文件
+    '''
+    if extract_path == "/sub":
+        extract_path = file_path.parent/file_path.stem
+    log.info(f"Extracting {file_path} to {extract_path}")
+    ue.extract_root(file_path, extract_path)
+    extract_path, flag = uu.check_extract_path(file_path, extract_path)
+    if flag:
+        sent_info(task_id, 1, extract_path, 1)
+    else:
+        sent_info(task_id, 0, extract_path, -1)
+
+
+def extract_linux_firmware(task_id, file_path:Path):
+    '''
+    使用binwalk解压固件文件
+    '''
+    extract_folder = file_path.parent/f'_{file_path.name}.extracted'
+    log.info(f"Extracting {file_path} to {extract_folder}")
+    if not extract_folder.exists():
+        cmd = f'docker run -it --rm -v {file_path.parent}:/workspace -w /workspace sheabot/binwalk -eM {file_path.name}'
+        os.system(cmd)
+    if extract_folder.exists():
+        sent_info(task_id, 1, extract_folder, 1)
+    else:
+        sent_info(task_id, 0, extract_folder, -1)
+
+
+
+def extract_win_software(task_id, file_path, extract_path, ex_deep=ext_deep):
     '''
     解压安装包文件
     '''
@@ -92,7 +123,8 @@ def extract_folder(folder_path: Path):
             new_dir = file.parent/file.stem
             new_dir.mkdir(parents=True, exist_ok=True)
             uf.move(file, new_dir/file.name)
-            extract_file(-1, new_dir/file.name, "/sub", True, ex_deep=2)
+            extract_win_software(-1, new_dir/file.name,
+                                 "/sub", True, ex_deep=2)
 
 
 def main(args):
@@ -100,9 +132,17 @@ def main(args):
     extract_path = args.extract_path
     task_id = args.task_id
     if not args.folder:
-        extract_file(task_id, file_path, extract_path)
+        file_type = file_path.suffix
+        if file_type in linux_file_type:
+            extract_liunx_software(task_id, file_path, extract_path)
+        elif file_type in firmware_file_type:
+            extract_linux_firmware(task_id, file_path)
+        else:
+            extract_win_software(task_id, file_path, extract_path)
     else:
         extract_folder(file_path)
+    
+    log.info(f"Extraction task completed! file_paht: {file_path}")
 
 
 if __name__ == '__main__':

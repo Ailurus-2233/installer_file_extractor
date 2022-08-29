@@ -8,6 +8,7 @@ flag = True
 
 def sent_info(task_id, percent, extract_path, status):
     if task_id == -1:
+        log.info(f'TaksId: -1, Don\'t send network requests')
         return
     global flag
     data = {
