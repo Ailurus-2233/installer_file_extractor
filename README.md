@@ -2,6 +2,14 @@
 
 通过python脚本调用[UniExtract](https://github.com/Bioruebe/UniExtract2)来实现安装包文件的解压，并根据不同的文件类型，将对应文件分类到不同的文件夹。在config.py中需要明确uniextract2的位置，才能正常执行。
 
+## 环境部署
+
+python - 3.7
+
+```bash
+pip install -r requirements.txt
+```
+
 ## 使用方式
 
 ```bash

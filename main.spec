@@ -4,7 +4,7 @@
 block_cipher = None
 
 
-a = Analysis(['main.py', './utils/extract.py', './utils/file.py', './utils/log.py', './utils/net.py', './utils/uniextract.py'],
+a = Analysis(['main.py', 'config.py', './utils/extract.py', './utils/file.py', './utils/log.py', './utils/net.py', './utils/uniextract.py'],
              pathex=[],
              binaries=[],
              datas=[],

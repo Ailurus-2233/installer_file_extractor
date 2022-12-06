@@ -62,6 +62,7 @@ def extract_win_software(task_id, file_path, extract_path, ex_deep=ext_deep):
         按文件类型分类
         '''
         log.info(f"Classifying extract_path {extract_path}")
+        uf.get_permissions(extract_path)
         uf.classify_file(extract_path)
 
         '''
@@ -142,7 +143,7 @@ def main(args):
     else:
         extract_folder(file_path)
     
-    log.info(f"Extraction task completed! file_paht: {file_path}")
+    log.info(f"Extraction task completed! file_path: {file_path}")
 
 
 if __name__ == '__main__':

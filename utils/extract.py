@@ -90,7 +90,7 @@ def extract_sub_temp(file_path: Path, root_extract_path: Path):
     
     uf.remove_file(temp)
     temp_ext, flag = uu.check_extract_path(temp, temp_ext)
-
+    uf.get_permissions(temp_ext)
     if flag:
         uf.classify_file(temp_ext)
         for tp in temp_ext.iterdir():

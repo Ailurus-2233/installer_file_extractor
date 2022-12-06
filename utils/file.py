@@ -26,12 +26,8 @@ def append(info, file_path):
 def move(old_path, new_path):
     try:
         shutil.move(str(old_path), str(new_path))
-    except PermissionError:
-        uu.kill_all_process()
-        remove_file(str(old_path))
-    except FileExistsError:
-        remove_file(str(old_path))
     except:
+        uu.kill_all_process()
         remove_file(str(old_path))
 
 
@@ -215,6 +211,8 @@ def classify_file(folder_path: Path):
     folder_path.mkdir(parents=True, exist_ok=True)
 
     for file in temp_path.iterdir():
+        if file.name == "other":
+            continue
         move(file, folder_path)
     remove(temp_path)
 
@@ -225,3 +223,11 @@ def get_tar_file(file):
     else:
         tar_file = f'{os.stat(file).st_size}-{str(file.name)}'
     return tar_file
+
+
+def get_permissions(folder_path: Path):
+    '''
+    获取文件夹下所有文件的权限
+    '''
+    cmd = f'takeown /f "{folder_path}" /R /D Y > tmp.txt'
+    os.system(cmd)

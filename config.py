@@ -1,11 +1,10 @@
 from pathlib import Path
-from turtle import update
 
 
 '''
 回调接口位置
 '''
-url = 'http://localhost:8080/unpack/callback'
+url = 'http://127.0.0.1:8080/unpack/callback'
 
 
 '''
@@ -17,8 +16,8 @@ ext_deep = 3
 '''
 uniextract2 位置
 '''
-uniextract_path = Path('../python_env/python_shell/file_unpack/uniextract2')
-# uniextract_path = Path('./UniExtract')
+uniextract_path = Path('C:/Apps/python_env/python_shell/file_unpack/uniextract2')
+# uniextract_path = Path('../UniExtract')
 uniextract = uniextract_path/'Uniextract.exe'
 
 
@@ -54,8 +53,8 @@ file_type = {
 '''
 解压文件临时目录
 '''
-temp_path = Path('../upload/tmp_software/')
-# temp_path = Path('C:/temp')
+# temp_path = Path('../upload/tmp_software/')
+temp_path = Path('C:/Apps/upload/tmp_software/')
 # temp_path = Path('./temp')
 
 
