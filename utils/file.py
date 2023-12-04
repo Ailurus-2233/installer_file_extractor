@@ -4,8 +4,9 @@ from pathlib import Path
 from utils.log import log
 from config import save_list, file_type, temp_path
 import stat
-from utils import extract as ue 
+from utils import extract as ue
 from utils import uniextract as uu
+
 
 def write(info, file_path):
     '''
@@ -57,7 +58,7 @@ def remove(folder_path):
 def remove_path(folder_path: Path):
     new_folder = folder_path.parent/'new'
     new_folder.mkdir(parents=True, exist_ok=True)
-    cmd = "robocopy {} {} /purge".format(new_folder, folder_path)   
+    cmd = "robocopy {} {} /purge".format(new_folder, folder_path)
     os.system(cmd)
     os.removedirs(new_folder)
 
@@ -181,6 +182,7 @@ def classify_file(folder_path: Path):
     '''
     将目标文件夹下的文件，按照文件类型分类到不同的文件夹，这些文件夹存储在target_path下
     '''
+    file_list = []
     temp_path = folder_path.parent/'temp'
     for tp in file_type.keys():
         file_list = get_type_file_list(folder_path, tp)
@@ -191,7 +193,19 @@ def classify_file(folder_path: Path):
             except:
                 continue
             tar_file = get_tar_file(file)
-            move(file, temp_path/tp/tar_file)
+            '''
+            如果文件名已经存在，则不再拷贝，否则拷贝 拷贝格式为 文件大小-文件名.文件格式
+            '''
+            temp = ""
+            if tar_file != file.name:
+                temp = file.name
+            else:
+                temp = tar_file.split("-", 1)[1]
+            if temp in file_list:
+                remove_file(file)
+            else:
+                move(file, temp_path/tp/tar_file)
+                file_list.append(temp)
 
     other_file_list = get_file_list(folder_path)
     (temp_path/'other').mkdir(parents=True, exist_ok=True)
@@ -205,7 +219,19 @@ def classify_file(folder_path: Path):
             remove_file(file)
             continue
         tar_file = get_tar_file(file)
-        move(file, temp_path/'other'/tar_file)
+        '''
+        如果文件名已经存在，则不再拷贝，否则拷贝 拷贝格式为 文件大小-文件名.文件格式
+        '''
+        temp = ""
+        if tar_file != file.name:
+            temp = file.name
+        else:
+            temp = tar_file.split("-", 1)[1]
+        if temp in file_list:
+            remove_file(file)
+        else:
+            move(file, temp_path/tp/tar_file)
+            file_list.append(temp)
 
     remove(folder_path)
     folder_path.mkdir(parents=True, exist_ok=True)
